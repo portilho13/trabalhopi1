@@ -18,8 +18,9 @@ typedef struct pessoa Atleta;
 
 struct prato {
     int codigo;
-    char refeicao[TAMSTR];
-    char prato[TAMSTR];
+    int dia;
+    int mes;
+    int ano;
     int cal;
 };
 typedef struct prato Refeicao;
@@ -76,16 +77,16 @@ void lerArquivo(char arquivo[5]) { // Funcao ler arquivo
     do {
         fscanf(fTwo, "%d;%d-%d-%d;%[^;];%[^;];%d cal", &codigo, &dia, &mes, &ano, refeicao, prato, &calorias);
         if (codigo >= 0 && codigo < TAM) {
-            //printf("Codigo: %d e refeicao: %s e calorias: %d\n", codigo, prato, calorias);
-            if (Pratos[codigo].cal > 0) {
-                Pratos[codigo].cal += calorias;
-            } else {
-                Pratos[codigo].cal = calorias;
-            }
+            Pratos[codigo].dia = dia;
+            Pratos[codigo].mes = mes;
+            Pratos[codigo].ano = ano;
+            Pratos[codigo].cal = calorias;
+
         } else {
             printf("Codigo Invalido: %d\n", codigo);
         }
-        printf("Total %d\n", Pratos[codigo].cal);
+        printf("Codigo: %d; Dia: %d; Mes: %d; Ano: %d; Calorias: %d\n", codigo, Pratos[codigo].dia, Pratos[codigo].mes, Pratos[codigo].ano, Pratos[codigo].cal);
+        //printf("Total %d\n", Pratos[codigo].cal);
     } while (!feof(fTwo));
     //printf("Total: %d\n", Pratos[1].cal);
 
