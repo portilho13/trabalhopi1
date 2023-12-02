@@ -9,6 +9,7 @@ struct pessoa {
     char nome[TAMSTR];
     int codigo;
     long tel;
+    int calorias;
 };
 
 typedef struct pessoa Atleta;
@@ -60,12 +61,13 @@ void lerArquivo(char arquivo[5]) {
             Cliente[i].codigo = codigo;
             strcpy(Cliente[i].nome, nome);
             Cliente[i].tel = tel;
+            Cliente[i].calorias = 0;
         } else {
             printf("Invalid Code: %d\n", codigo);
         }
         i++;
     } while ((!feof(fOne) && (i < TAM)));
-
+    qtdClientes = i - 1;
     fclose(fOne);
 
     if ((fTwo = fopen("2.txt", "r")) == NULL) {
@@ -81,6 +83,7 @@ void lerArquivo(char arquivo[5]) {
     do {
         fscanf(fTwo, "%d;%d-%d-%d;%[^;];%[^;];%d cal", &codigo, &dia, &mes, &ano, refeicao, prato, &calorias);
         if (codigo >= 0 && codigo < TAM) {
+            Pratos[i].codigo = codigo;
             Pratos[i].dia = dia;
             Pratos[i].mes = mes;
             Pratos[i].ano = ano;
@@ -90,6 +93,7 @@ void lerArquivo(char arquivo[5]) {
         }
         i++;
     } while (!feof(fTwo));
+    qtdPratos = i - 1;
     fclose(fTwo);
 
     if ((fThree = fopen("3.txt", "r")) == NULL) {
@@ -103,14 +107,11 @@ void lerArquivo(char arquivo[5]) {
     do {
         // Initialize variables before the loop
         codigo = dia = mes = ano = calMin = calMax = 0;
-        int teste = fscanf(fThree, "%d;%d-%d-%d;%[^;];%d Cal, %d Cal", &codigo, &dia, &mes, &ano, prato, &calMin, &calMax);
         // Read data and check for successful reading
-        if (teste != 8) {
-            printf("%d", teste);
+        if (fscanf(fThree, "%d;%d-%d-%d;%[^;];%d Cal, %d Cal,", &codigo, &dia, &mes, &ano, prato, &calMin, &calMax)!= 7) {
             printf("Erro ao ler do ficheiro\n");
             break;
         }
-
         if (codigo >= 0 && codigo < TAM) {
             Plano[i].dia = dia;
             Plano[i].mes = mes;
@@ -122,16 +123,24 @@ void lerArquivo(char arquivo[5]) {
         }
         i++;
     } while (!feof(fThree));
+    qtdPlanos = i - 1;
 
     fclose(fThree);
 
-    // int numCal;
-    // numCal = codigo = 0;
-    // for (int i = 0; i < qtdPratos; i++){
-    //    for (int j = 0; j < qtdPlanos; j++) {
-    //         if (Pratos[i].codigo == Plano[j].codigo) {
-    //             printf("%d", Plano[j].codigo);
-    //         }
-    //    }
-    // }
+    int numCal;
+    numCal = codigo = 0;
+    for (int i = 0; i < qtdPratos; i++){
+        codigo = Pratos[i].codigo;
+        numCal = Pratos[i].cal;
+        for (int j = 0; j < qtdClientes; j++) {
+            if (Cliente[j].codigo == codigo) {
+                if (Cliente[j].calorias > 0) {
+                    Cliente[j].calorias += numCal;
+                } else {
+                    Cliente[j].calorias = numCal;
+                }
+                printf("Codigo: %d, Nome: %s, Calorias: %d\n", Cliente[j].codigo, Cliente[j].nome, Cliente[j].calorias);
+            }
+        }
+    }
  }
