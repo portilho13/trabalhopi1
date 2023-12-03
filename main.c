@@ -34,6 +34,7 @@ struct plano {
 typedef struct plano Planos;
 
 void lerArquivo(char arquivo[5]);
+int CompararData(int dia1, int mes1, int ano1, int dia2, int mes2, int ano2);
 
 int main() {
     lerArquivo("1.txt");
@@ -130,17 +131,41 @@ void lerArquivo(char arquivo[5]) {
     int numCal;
     numCal = codigo = 0;
     for (int i = 0; i < qtdPratos; i++){
-        codigo = Pratos[i].codigo;
-        numCal = Pratos[i].cal;
-        for (int j = 0; j < qtdClientes; j++) {
-            if (Cliente[j].codigo == codigo) {
-                if (Cliente[j].calorias > 0) {
-                    Cliente[j].calorias += numCal;
-                } else {
-                    Cliente[j].calorias = numCal;
+        if (CompararData(Pratos[i].dia, Pratos[i].mes, Pratos[i].ano, 25, 1, 2023) == -1) {
+            codigo = Pratos[i].codigo;
+            numCal = Pratos[i].cal;
+            for (int j = 0; j < qtdClientes; j++) {
+                if (Cliente[j].codigo == codigo) {
+                    if (Cliente[j].calorias > 0) {
+                        Cliente[j].calorias += numCal;
+                    } else {
+                        Cliente[j].calorias = numCal;
+                    }
+                    printf("Codigo: %d, Nome: %s, Calorias: %d\n", Cliente[j].codigo, Cliente[j].nome, Cliente[j].calorias);
                 }
-                printf("Codigo: %d, Nome: %s, Calorias: %d\n", Cliente[j].codigo, Cliente[j].nome, Cliente[j].calorias);
             }
+
         }
     }
  }
+
+ int CompararData(int dia1, int mes1, int ano1, int dia2, int mes2, int ano2) {
+    if (ano1 < ano2)
+        return -1;
+    else if (ano1 > ano2)
+        return 1;
+
+    // Years are equal, compare months
+    if (mes1 < mes2)
+        return -1;
+    else if (mes1 > mes2)
+        return 1;
+
+    // Years and months are equal, compare days
+    if (dia1 < dia2)
+        return -1;
+    else if (dia1 > dia2)
+        return 1;
+
+    return 0;  // Dates are equal
+}
