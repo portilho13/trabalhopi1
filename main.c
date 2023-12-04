@@ -35,6 +35,7 @@ typedef struct plano Planos;
 
 void lerArquivo(char arquivo[5]);
 int CompararData(int dia1, int mes1, int ano1, int dia2, int mes2, int ano2);
+int MaxCal(int dia, int mes, int ano, int codigo, int qtdPlanos, Planos Plano[TAM]);
 
 int main() {
     lerArquivo("1.txt");
@@ -136,6 +137,7 @@ void lerArquivo(char arquivo[5]) {
             codigo = Pratos[i].codigo;
             numCal = Pratos[i].cal;
             for (int j = 0; j < qtdClientes; j++) {
+                calMax = MaxCal(25, 1, 2023, codigo, qtdPlanos, Plano);
                 if (Cliente[j].codigo == codigo) {
                     for (int k = 0; k < qtdPlanos; k++) {
                         if (Plano[k].codigo == codigo) {
@@ -145,8 +147,8 @@ void lerArquivo(char arquivo[5]) {
                                 Cliente[j].calorias = numCal;
                             }  
                             if (k == qtdPlanos - 1) {
-                                if (Plano[k].calMax < Cliente[j].calorias) {
-                                    printf("Codigo: %d, Nome: %s, Calorias: %d, Calorias Max: %d\n", Cliente[j].codigo, Cliente[j].nome, Cliente[j].calorias, Plano[k].calMax);
+                                if (calMax < Cliente[j].calorias) {
+                                    printf("Codigo: %d, Nome: %s, Calorias: %d, Calorias Max: %d\n", Cliente[j].codigo, Cliente[j].nome, Cliente[j].calorias, calMax);
                                 }  
                             }                        
                         }
@@ -179,4 +181,18 @@ void lerArquivo(char arquivo[5]) {
         return 1;
 
     return 0;  // Dates are equal
+}
+
+
+int MaxCal(int dia, int mes, int ano, int codigo, int qtdPlanos, Planos Plano[TAM]) {
+    int i = 0;
+    int index = i;
+    int cal = Plano[0].calMax;
+    while (i != qtdPlanos) {
+        if ((Plano[i].codigo == codigo) && (CompararData(Plano[i].dia, Plano[i].mes, Plano[i].ano, dia, mes, ano) == -1) && (Plano[i].calMax >= cal)) {
+            index = i;
+        }
+        i++;
+    }
+    return Plano[index].calMax;
 }
