@@ -114,6 +114,7 @@ void lerArquivo(char arquivo[5]) {
             break;
         }
         if (codigo >= 0 && codigo < TAM) {
+            Plano[i].codigo = codigo;
             Plano[i].dia = dia;
             Plano[i].mes = mes;
             Plano[i].ano = ano;
@@ -136,12 +137,22 @@ void lerArquivo(char arquivo[5]) {
             numCal = Pratos[i].cal;
             for (int j = 0; j < qtdClientes; j++) {
                 if (Cliente[j].codigo == codigo) {
-                    if (Cliente[j].calorias > 0) {
-                        Cliente[j].calorias += numCal;
-                    } else {
-                        Cliente[j].calorias = numCal;
+                    for (int k = 0; k < qtdPlanos; k++) {
+                        if (Plano[k].codigo == codigo) {
+                            if (Cliente[j].calorias > 0) {
+                                Cliente[j].calorias += numCal;
+                            } else {
+                                Cliente[j].calorias = numCal;
+                            }  
+                            if (k == qtdPlanos - 1) {
+                                if (Plano[k].calMax < Cliente[j].calorias) {
+                                    printf("Codigo: %d, Nome: %s, Calorias: %d, Calorias Max: %d\n", Cliente[j].codigo, Cliente[j].nome, Cliente[j].calorias, Plano[k].calMax);
+                                }  
+                            }                        
+                        }
+                        
                     }
-                    printf("Codigo: %d, Nome: %s, Calorias: %d\n", Cliente[j].codigo, Cliente[j].nome, Cliente[j].calorias);
+
                 }
             }
 
