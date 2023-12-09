@@ -1,3 +1,10 @@
+// TODO:
+
+// Input para periodos de tempo;
+// Criar Tabelas
+// Adicionar caso para quando datas sao iguais
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -16,6 +23,7 @@ typedef struct pessoa Atleta;
 
 struct prato {
     int codigo;
+    char refeicao[TAMSTR];
     int dia;
     int mes;
     int ano;
@@ -28,16 +36,39 @@ struct plano {
     int dia;
     int mes;
     int ano;
+    char refeicao[TAMSTR];
     int calMin;
     int calMax;
 };
 typedef struct plano Planos;
 
+struct tabela {
+    int codigo;
+    char nome[TAMSTR];
+    char refeicao[TAMSTR];
+    int diainicio;
+    int mesinicio;
+    int anoinicio;
+    int diafim;
+    int mesfim;
+    int anofim;
+    int calMin;
+    int calMax;
+    int calorias;
+};
+typedef struct tabela Tabela;
+
 void lerArquivo(char arquivo[5]);
-int CompararData(int dia1, int mes1, int ano1, int dia2, int mes2, int ano2);
+int CompararDatas(int dia1, int mes1, int ano1, int dia2, int mes2, int ano2, int dia3, int mes3, int ano3);
 int MaxCal(int dia, int mes, int ano, int codigo, int qtdPlanos, Planos Plano[TAM]);
 int Ordenar(Atleta Cliente[TAM], int qtdClientes);
-int VerificarCalorias(int qtdClientes, int qtdPratos, int qtdPlanos, Atleta Cliente[TAM], Planos Plano[TAM], Refeicao Pratos[TAM]);
+int CalcularCalorias(Refeicao Pratos[TAM], int qtdPratos, int codigo, int dia1, int mes1, int ano1, int dia2, int mes2, int ano2);
+int VerificarCalorias(int qtdClientes, int qtdPlanos, Atleta Cliente[TAM], Planos Plano[TAM]);
+int CriarPlano(Planos Plano[TAM], int qtdPlanos, int dia1, int mes1, int ano1, int dia2, int mes2, int ano2);
+int CalcularPratos(Refeicao Pratos[TAM], int codigo, int qtdPratos);
+int CalcularCalMedias(Atleta Cliente[TAM], Refeicao Pratos[TAM], int qtdClientes, int qtdPratos);
+int GerarTabela(Atleta Cliente[TAM], Refeicao Pratos[TAM], Planos Plano[TAM], int qtdClientes, int qtdPratos, int qtdPlanos);
+int CompararData(int dia1, int mes1, int ano1, int dia2, int mes2, int ano2);
 
 int main() {
     lerArquivo("1.txt");
@@ -89,6 +120,7 @@ void lerArquivo(char arquivo[5]) {
         fscanf(fTwo, "%d;%d-%d-%d;%[^;];%[^;];%d cal\n", &codigo, &dia, &mes, &ano, refeicao, prato, &calorias);
         if (codigo >= 0 && codigo < TAM) {
             Pratos[i].codigo = codigo;
+            strcpy(Pratos[i].refeicao, refeicao);
             Pratos[i].dia = dia;
             Pratos[i].mes = mes;
             Pratos[i].ano = ano;
@@ -123,6 +155,7 @@ void lerArquivo(char arquivo[5]) {
             Plano[i].dia = dia;
             Plano[i].mes = mes;
             Plano[i].ano = ano;
+            strcpy(Plano[i].refeicao, prato);
             Plano[i].calMin = calMin;
             Plano[i].calMax = calMax;
         } else {
@@ -134,32 +167,35 @@ void lerArquivo(char arquivo[5]) {
 
     fclose(fThree);
 
-
-    VerificarCalorias(qtdClientes, qtdPratos, qtdPlanos, Cliente, Plano, Pratos);
+    for (int i = 0; i < qtdClientes; i++) {
+        Cliente[i].calorias = CalcularCalorias(Pratos, qtdPratos, Cliente[i].codigo, 25, 6, 2023, 31, 12, 2022);
+    }
+    printf("-------------------------------------------------------------------------------------\n");
+    VerificarCalorias(qtdClientes, qtdPratos, Cliente, Plano);
     Ordenar(Cliente, qtdClientes);
-    VerificarCalorias(qtdClientes, qtdPratos, qtdPlanos, Cliente, Plano, Pratos);
+    printf("-------------------------------------------------------------------------------------\n");
+    VerificarCalorias(qtdClientes, qtdPratos, Cliente, Plano);
+    printf("-------------------------------------------------------------------------------------\n");
+    CriarPlano(Plano, qtdPlanos, 25, 6, 2023, 31, 12, 2022);
+    printf("-------------------------------------------------------------------------------------\n");
+    CalcularCalMedias(Cliente, Pratos, qtdClientes, qtdPratos);
+    printf("-------------------------------------------------------------------------------------\n");
+    GerarTabela(Cliente, Pratos, Plano, qtdClientes, qtdPratos, qtdPlanos);
+
  }
 
- int CompararData(int dia1, int mes1, int ano1, int dia2, int mes2, int ano2) {
-    if (ano1 < ano2)
+int CompararDatas(int dia1, int mes1, int ano1, int dia2, int mes2, int ano2, int dia3, int mes3, int ano3) {
+    if ((ano1 > ano3) || (ano1 == ano3 && ((mes1 > mes3) || (mes1 == mes3 && dia1 >= dia3))))
         return -1;
-    else if (ano1 > ano2)
+    else if ((ano1 < ano2) || (ano1 == ano2 && ((mes1 < mes2) || (mes1 == mes2 && dia1 < dia2))))
         return 1;
 
-    // Years are equal, compare months
-    if (mes1 < mes2)
-        return -1;
-    else if (mes1 > mes2)
-        return 1;
-
-    // Years and months are equal, compare days
-    if (dia1 < dia2)
-        return -1;
-    else if (dia1 > dia2)
-        return 1;
-
-    return 0;  // Dates are equal
+    return 0;  // Date1 is within the interval (exclusive of both date3 and date2)
 }
+
+
+
+
 
 
 int MaxCal(int dia, int mes, int ano, int codigo, int qtdPlanos, Planos Plano[TAM]) {
@@ -167,7 +203,7 @@ int MaxCal(int dia, int mes, int ano, int codigo, int qtdPlanos, Planos Plano[TA
     int index = i;
     int cal = Plano[0].calMax;
     while (i != qtdPlanos) {
-        if ((Plano[i].codigo == codigo) && (CompararData(Plano[i].dia, Plano[i].mes, Plano[i].ano, dia, mes, ano) == -1) && (Plano[i].calMax >= cal)) {
+        if ((Plano[i].codigo == codigo) && (CompararDatas(Plano[i].dia, Plano[i].mes, Plano[i].ano, dia, mes, ano, 31, 12, 2022) == -1) && (Plano[i].calMax >= cal)) {
             index = i;
         }
         i++;
@@ -207,24 +243,21 @@ int Ordenar(Atleta Cliente[TAM], int qtdClientes) {
     return 0;
 }
 
-int VerificarCalorias(int qtdClientes, int qtdPratos, int qtdPlanos, Atleta Cliente[TAM], Planos Plano[TAM], Refeicao Pratos[TAM]) {
-    int numCal, codigo, calMax;
-    numCal = codigo = 0;
+int CalcularCalorias(Refeicao Pratos[TAM], int qtdPratos, int codigo, int dia1, int mes1, int ano1, int dia2, int mes2, int ano2) {
+    int numCal = 0;
     for (int i = 0; i < qtdPratos; i++){
-        if (CompararData(Pratos[i].dia, Pratos[i].mes, Pratos[i].ano, 25, 6, 2023) == -1) {
-            codigo = Pratos[i].codigo;
+        if ((CompararDatas(Pratos[i].dia, Pratos[i].mes, Pratos[i].ano, dia1, mes1, ano1, dia2, mes2, ano2) == -1) && (Pratos[i].codigo == codigo)) {
+            numCal += Pratos[i].cal;
+        } else if ((CompararDatas(Pratos[i].dia, Pratos[i].mes, Pratos[i].ano, dia1, mes1, ano1, dia2, mes2, ano2) == -1) && (Pratos[i].codigo == codigo)) {
             numCal = Pratos[i].cal;
-            for (int j = 0; j < qtdClientes; j++) {
-                if (Cliente[j].codigo == codigo) {
-                    if (Cliente[j].codigo > 0) {
-                        Cliente[j].calorias += numCal;
-                    } else {
-                        Cliente[j].calorias = numCal;
-                    }
-                }
-            }
         }
     }
+    return numCal;
+}
+
+int VerificarCalorias(int qtdClientes, int qtdPlanos, Atleta Cliente[TAM], Planos Plano[TAM]) {
+    int numCal, codigo, calMax;
+    numCal = codigo = 0;
     for (int i = 0; i < qtdClientes; i++) {
         codigo = Cliente[i].codigo;
         calMax = MaxCal(25, 1, 2023, codigo, qtdPlanos, Plano);
@@ -232,6 +265,120 @@ int VerificarCalorias(int qtdClientes, int qtdPratos, int qtdPlanos, Atleta Clie
             printf("Codigo: %d, Nome: %s, Calorias: %d, Calorias Max: %d\n", Cliente[i].codigo, Cliente[i].nome, Cliente[i].calorias, calMax);
         }
        
+    }
+    return 0;
+}
+
+int CriarPlano(Planos Plano[TAM], int qtdPlanos, int dia1, int mes1, int ano1, int dia2, int mes2, int ano2) {
+    for (int i = 0; i < qtdPlanos; i++) {
+        if (CompararDatas(Plano[i].dia, Plano[i].mes, Plano[i].ano, dia1, mes1, ano1, dia2, mes2, ano2) == -1) {
+            printf("| Codigo %d | Data: %d-%d-%d | Refeicao: %s | Cal Min: %d | Cal Max: %d |\n", Plano[i].codigo, Plano[i].dia, Plano[i].mes, Plano[i].ano, Plano[i].refeicao, Plano[i].calMin, Plano[i].calMax);
+        }
+    }
+    return 0;
+
+}
+
+int CalcularPratos(Refeicao Pratos[TAM], int codigo, int qtdPratos) {
+    int n = 0;
+    for (int i = 0; i < qtdPratos; i++) {
+        if (Pratos[i].codigo == codigo){
+            n++;
+        }
+    }
+    return n;
+}
+
+int CalcularCalMedias(Atleta Cliente[TAM], Refeicao Pratos[TAM], int qtdClientes, int qtdPratos) {
+    int n;
+    for (int i = 0; i < qtdClientes; i++) {
+        n = CalcularPratos(Pratos, Cliente[i].codigo, qtdPratos);
+        //printf("%d\n", Cliente[i].calorias);
+        float divisao = (float)Cliente[i].calorias / (float)n;
+        printf("| Codigo: %d | Nome: %s | Media Calorias: %.2f |\n", Cliente[i].codigo, Cliente[i].nome, divisao);
+
+    }
+    return 0;
+}
+
+
+
+int CompararData(int dia1, int mes1, int ano1, int dia2, int mes2, int ano2) {
+    if (ano1 < ano2 || (ano1 == ano2 && (mes1 < mes2 || (mes1 == mes2 && dia1 < dia2)))) {
+        return -1; // date1 is earlier than date2
+    } else if (ano1 > ano2 || (ano1 == ano2 && (mes1 > mes2 || (mes1 == mes2 && dia1 > dia2)))) {
+        return 1;  // date1 is later than date2
+    } else {
+        return 0;  // dates are equal
+    }
+}
+
+int GerarTabela(Atleta Cliente[TAM], Refeicao Pratos[TAM], Planos Plano[TAM], int qtdClientes, int qtdPratos, int qtdPlanos) {
+    Tabela Tabela[TAM];
+    int qtdTabela = 0;
+    for (int i = 0; i < qtdPlanos; i++) {
+        int repeated = 0;
+
+        for (int j = 0; j < qtdTabela; j++) {
+            int numCal = 0;
+            if ((strcmp(Tabela[j].refeicao, Plano[i].refeicao) == 0) && (Tabela[j].codigo == Plano[i].codigo)) {
+                if (CompararData(Tabela[j].diainicio, Tabela[j].mesinicio, Tabela[j].anoinicio, Plano[i].dia, Plano[i].mes, Plano[i].ano) == 1) {
+                    Tabela[j].diainicio = Plano[i].dia;
+                    Tabela[j].mesinicio = Plano[i].mes;
+                    Tabela[j].anoinicio = Plano[i].ano;
+                    Tabela[j].calMax += Plano[i].calMax;
+                    Tabela[j].calMin += Plano[i].calMin;
+                } else if (CompararData(Tabela[j].diainicio, Tabela[j].mesinicio, Tabela[j].anoinicio, Plano[i].dia, Plano[i].mes, Plano[i].ano) == -1) {
+                    Tabela[j].diafim = Plano[i].dia;
+                    Tabela[j].mesfim = Plano[i].mes;
+                    Tabela[j].anofim = Plano[i].ano;
+                    Tabela[j].calMax += Plano[i].calMax;
+                    Tabela[j].calMin += Plano[i].calMin;                  
+                }
+                repeated = 1;
+                break;
+            }
+        }
+
+        if (!repeated) {
+            Tabela[qtdTabela].codigo = Plano[i].codigo;
+            strcpy(Tabela[qtdTabela].refeicao, Plano[i].refeicao);
+            for (int j = 0; j < qtdClientes; j++) {
+                if (Cliente[j].codigo == Plano[i].codigo) {
+                    strcpy(Tabela[qtdTabela].nome, Cliente[j].nome);
+                }
+            }
+            Tabela[qtdTabela].diainicio = Plano[i].dia;
+            Tabela[qtdTabela].mesinicio = Plano[i].mes;
+            Tabela[qtdTabela].anoinicio = Plano[i].ano;
+            Tabela[qtdTabela].diafim = Plano[i].dia;
+            Tabela[qtdTabela].mesfim = Plano[i].mes;
+            Tabela[qtdTabela].anofim = Plano[i].ano;
+            Tabela[qtdTabela].calMin = Plano[i].calMin;
+            Tabela[qtdTabela].calMax = Plano[i].calMax;
+            Tabela[qtdTabela].calorias = 0;
+            qtdTabela++;
+        }
+    }
+
+    for (int i = 0; i < qtdTabela; i++) {
+        for (int j = 0; j < qtdPratos; j++) {
+            if ((CompararDatas(Pratos[j].dia, Pratos[j].mes, Pratos[j].ano, Tabela[i].diafim, Tabela[i].mesfim, Tabela[i].anofim, Tabela[i].diainicio, Tabela[i].mesinicio, Tabela[i].anoinicio) == -1) && (Tabela[i].codigo == Pratos[j].codigo) && strcmp(Tabela[i].refeicao, Pratos[j].refeicao) == 0) {
+                Tabela[i].calorias += Pratos[j].cal;
+                //printf("Codigo: %d, Prato: %s, Cal: %d\n", Pratos[j].codigo, Pratos[j].refeicao, Pratos[j].cal);
+            } else if (((CompararDatas(Pratos[j].dia, Pratos[j].mes, Pratos[j].ano, Tabela[i].diafim, Tabela[i].mesfim, Tabela[i].anofim, Tabela[i].diainicio, Tabela[i].mesinicio, Tabela[i].anoinicio) == 0) && (Tabela[i].codigo == Pratos[j].codigo) && strcmp(Tabela[i].refeicao, Pratos[j].refeicao) == 0)) {
+                Tabela[i].calorias += Pratos[j].cal;
+                printf("Codigo: %d, Prato: %s, Cal: %d\n", Pratos[j].codigo, Pratos[j].refeicao, Pratos[j].cal);
+
+            }
+        }
+    }
+    printf("---------------------------------------------------------------------------\n");
+    printf("| NP | Paciente | Refeicao | Inicio | Fim | Minimo | Maximo | Consumo |\n");
+    printf("---------------------------------------------------------------------------\n");
+    for (int i = 0; i < qtdTabela; i++) {
+        printf("| %d | %s | %s | %d-%d-%d | %d-%d-%d | %d | %d | %d |\n", Tabela[i].codigo, Tabela[i].nome, Tabela[i].refeicao, Tabela[i].diainicio, Tabela[i].mesinicio, Tabela[i].anoinicio, Tabela[i].diafim, Tabela[i].mesfim, Tabela[i].anofim, Tabela[i].calMin, Tabela[i].calMax, Tabela[i].calorias);
+        printf("---------------------------------------------------------------------------\n");
     }
     return 0;
 }

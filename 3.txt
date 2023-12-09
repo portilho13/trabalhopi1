@@ -1,3 +1,7 @@
-0001;01-01-2023;pequeno almoço;300 Cal, 400 Cal
-0001;01-01-2023;jantar;500 Cal, 600 Cal
-0003;21-03-2023;almoço;500 Cal, 600 Cal
+    0001;01-01-2023;pequeno almoço;300 Cal, 400 Cal
+    0001;02-01-2023;pequeno almoço;300 Cal, 400 Cal
+    0001;31-12-2022;pequeno almoço;300 Cal, 400 Cal
+    0001;01-01-2023;jantar;500 Cal, 600 Cal
+    0001;01-01-2023;jantar;500 Cal, 600 Cal
+    0003;13-02-2023;almoço;500 Cal, 600 Cal
+    0003;26-03-2023;almoço;500 Cal, 600 Cal
