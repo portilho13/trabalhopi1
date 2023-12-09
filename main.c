@@ -69,6 +69,7 @@ int CalcularPratos(Refeicao Pratos[TAM], int codigo, int qtdPratos);
 int CalcularCalMedias(Atleta Cliente[TAM], Refeicao Pratos[TAM], int qtdClientes, int qtdPratos);
 int GerarTabela(Atleta Cliente[TAM], Refeicao Pratos[TAM], Planos Plano[TAM], int qtdClientes, int qtdPratos, int qtdPlanos);
 int CompararData(int dia1, int mes1, int ano1, int dia2, int mes2, int ano2);
+int Menu();
 
 int main() {
     lerArquivo("1.txt");
@@ -167,20 +168,55 @@ void lerArquivo(char arquivo[5]) {
 
     fclose(fThree);
 
-    for (int i = 0; i < qtdClientes; i++) {
-        Cliente[i].calorias = CalcularCalorias(Pratos, qtdPratos, Cliente[i].codigo, 25, 6, 2023, 31, 12, 2022);
-    }
-    printf("-------------------------------------------------------------------------------------\n");
-    VerificarCalorias(qtdClientes, qtdPratos, Cliente, Plano);
-    Ordenar(Cliente, qtdClientes);
-    printf("-------------------------------------------------------------------------------------\n");
-    VerificarCalorias(qtdClientes, qtdPratos, Cliente, Plano);
-    printf("-------------------------------------------------------------------------------------\n");
-    CriarPlano(Plano, qtdPlanos, 25, 6, 2023, 31, 12, 2022);
-    printf("-------------------------------------------------------------------------------------\n");
-    CalcularCalMedias(Cliente, Pratos, qtdClientes, qtdPratos);
-    printf("-------------------------------------------------------------------------------------\n");
-    GerarTabela(Cliente, Pratos, Plano, qtdClientes, qtdPratos, qtdPlanos);
+
+    int opcao, dia1, mes1, ano1, dia2, mes2, ano2;
+    do {
+        opcao = Menu();
+        switch(opcao) {
+            case 1:
+                printf("Eslha um intervalo de tempo inicial no formato dd-mm-aa: ");
+                scanf("%d-%d-%d", &dia1, &mes1, &ano1);
+                printf("Eslha um intervalo de tempo final no formato dd-mm-aa: ");
+                scanf("%d-%d-%d", &dia2, &mes2, &ano2);
+                for (int i = 0; i < qtdClientes; i++) {
+                    Cliente[i].calorias = CalcularCalorias(Pratos, qtdPratos, Cliente[i].codigo, dia2, mes2, ano2, dia1, mes1, ano1);
+                }
+                VerificarCalorias(qtdClientes, qtdPratos, Cliente, Plano);
+                break;
+            case 2:
+                printf("Eslha um intervalo de tempo inicial no formato dd-mm-aa: ");
+                scanf("%d-%d-%d", &dia1, &mes1, &ano1);
+                printf("Eslha um intervalo de tempo final no formato dd-mm-aa: ");
+                scanf("%d-%d-%d", &dia2, &mes2, &ano2);
+                for (int i = 0; i < qtdClientes; i++) {
+                    Cliente[i].calorias = CalcularCalorias(Pratos, qtdPratos, Cliente[i].codigo, dia2, mes2, ano2, dia1, mes1, ano1);
+                }
+                Ordenar(Cliente, qtdClientes);
+                VerificarCalorias(qtdClientes, qtdPratos, Cliente, Plano);
+                break;
+            case 3:
+                printf("Eslha um intervalo de tempo inicial no formato dd-mm-aa: ");
+                scanf("%d-%d-%d", &dia1, &mes1, &ano1);
+                printf("Eslha um intervalo de tempo final no formato dd-mm-aa: ");
+                scanf("%d-%d-%d", &dia2, &mes2, &ano2);
+                CriarPlano(Plano, qtdPlanos, dia2, mes2, ano2, dia1, mes1, ano1);
+                break;
+            case 4:
+                printf("Eslha um intervalo de tempo inicial no formato dd-mm-aa: ");
+                scanf("%d-%d-%d", &dia1, &mes1, &ano1);
+                printf("Eslha um intervalo de tempo final no formato dd-mm-aa: ");
+                scanf("%d-%d-%d", &dia2, &mes2, &ano2);
+                for (int i = 0; i < qtdClientes; i++) {
+                    Cliente[i].calorias = CalcularCalorias(Pratos, qtdPratos, Cliente[i].codigo, dia2, mes2, ano2, dia1, mes1, ano1);
+                }
+                CalcularCalMedias(Cliente, Pratos, qtdClientes, qtdPratos);
+                break;
+            case 5:
+                GerarTabela(Cliente, Pratos, Plano, qtdClientes, qtdPratos, qtdPlanos);
+            case 0:
+                printf("A sair...\n");
+        }
+    } while(opcao != 0);
 
  }
 
@@ -258,21 +294,25 @@ int CalcularCalorias(Refeicao Pratos[TAM], int qtdPratos, int codigo, int dia1, 
 int VerificarCalorias(int qtdClientes, int qtdPlanos, Atleta Cliente[TAM], Planos Plano[TAM]) {
     int numCal, codigo, calMax;
     numCal = codigo = 0;
+    printf("----------------------------------------------------------------\n");
     for (int i = 0; i < qtdClientes; i++) {
         codigo = Cliente[i].codigo;
         calMax = MaxCal(25, 1, 2023, codigo, qtdPlanos, Plano);
         if (calMax < Cliente[i].calorias) {
-            printf("Codigo: %d, Nome: %s, Calorias: %d, Calorias Max: %d\n", Cliente[i].codigo, Cliente[i].nome, Cliente[i].calorias, calMax);
+            printf("| Codigo: %d | Nome: %s | Calorias: %d | Calorias Max: %d |\n", Cliente[i].codigo, Cliente[i].nome, Cliente[i].calorias, calMax);
         }
        
     }
+    printf("----------------------------------------------------------------\n");
     return 0;
 }
 
 int CriarPlano(Planos Plano[TAM], int qtdPlanos, int dia1, int mes1, int ano1, int dia2, int mes2, int ano2) {
+    printf("---------------------------------------------------------------------------\n");
     for (int i = 0; i < qtdPlanos; i++) {
         if (CompararDatas(Plano[i].dia, Plano[i].mes, Plano[i].ano, dia1, mes1, ano1, dia2, mes2, ano2) == -1) {
             printf("| Codigo %d | Data: %d-%d-%d | Refeicao: %s | Cal Min: %d | Cal Max: %d |\n", Plano[i].codigo, Plano[i].dia, Plano[i].mes, Plano[i].ano, Plano[i].refeicao, Plano[i].calMin, Plano[i].calMax);
+            printf("---------------------------------------------------------------------------\n");
         }
     }
     return 0;
@@ -291,13 +331,16 @@ int CalcularPratos(Refeicao Pratos[TAM], int codigo, int qtdPratos) {
 
 int CalcularCalMedias(Atleta Cliente[TAM], Refeicao Pratos[TAM], int qtdClientes, int qtdPratos) {
     int n;
+    printf("---------------------------------------\n");
     for (int i = 0; i < qtdClientes; i++) {
         n = CalcularPratos(Pratos, Cliente[i].codigo, qtdPratos);
         //printf("%d\n", Cliente[i].calorias);
         float divisao = (float)Cliente[i].calorias / (float)n;
         printf("| Codigo: %d | Nome: %s | Media Calorias: %.2f |\n", Cliente[i].codigo, Cliente[i].nome, divisao);
+        printf("---------------------------------------\n");
 
     }
+    printf("---------------------------------------\n");
     return 0;
 }
 
@@ -381,4 +424,22 @@ int GerarTabela(Atleta Cliente[TAM], Refeicao Pratos[TAM], Planos Plano[TAM], in
         printf("---------------------------------------------------------------------------\n");
     }
     return 0;
+}
+
+int Menu() //Menu Principal
+{
+    int opc;
+    printf("--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n");
+    printf("|                                                                           Menu                                                                                               |\n");
+    printf("--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n");
+    printf("|        1 - Numero de pacientes que ultrapassaram determinada quantidade de calorias, num determinado periodo                                                                 |\n");
+    printf("|        2 - Listagem dos pacientes, ordenada por ordem decrescente do numero de paciente, que realizaram alguma refeicao com quantidade de calorias fora do intervalo         |\n");
+    printf("|        3 - Listar o plano nutricional de um paciente para determinada refeicao ao longo de um determinado periodo                                                            |\n");
+    printf("|        4 - Calculo das medias das calorias consumidas por refeicao por cada paciente ao longo de um determinado periodo                                                      |\n");
+    printf("|        5 - Gerar a tabela das refeicoes                                                                                                                                      |\n");
+    printf("|        0 - Sair                                                                                                                                                              |\n");
+    printf("--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n");
+    printf("Selecione uma opcao: ");
+    scanf("%i", &opc); getchar();
+    return opc;
 }
