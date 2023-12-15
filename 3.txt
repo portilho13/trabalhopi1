@@ -1,3 +1,4 @@
 0001; 01-01-2023; pequeno almoço; 300 Cal, 400 Cal
 0001; 01-01-2023; jantar; 500 Cal, 600 Cal
-0003; 21-03-2023; almoço; 500 Cal, 600 Cal
+0003; 16-01-2023; almoço; 500 Cal, 600 Cal
+0002; 26-03-2023; jantar; 500 Cal, 700 Cal

@@ -16,7 +16,7 @@ Com este trabalho prático pretende-se sedimentar os conhecimentos introduzidos 
 ● Métodos de programação imperativa e sua implementação na linguagemdeprogramação C. Enunciado
 O problema que se pretende explorar está relacionado com o bem-estar das pessoas. Ocontexto atual promove a necessidade de cuidados nutricionais bem como uma dieta saudável.
 LESI - PI- 2023-2024 2Existência evidências que indicam que um comportamento alimentar saudável pode modularfavoravelmente a inflamação do corpo e prevenir a forma grave de doenças. Umadietasaudável incluí um alto teor de frutas e vegetais, peixe, etc. Para isso, possuir uma aplicação informática que apoie a gerir este tipo de comportamento,controlando e monitorizando a realização de uma deita alimentar saudável, é fundamental.Pretende-se assim desenvolver uma solução para manipulação dos dados dos pacientes deuma gabinete de nutrição, aplicando o paradigma de programação imperativa (linguagemC),de modo a responder, entre outras, às funcionalidades seguintes:
-1. a. Carregamento de um ficheiro de texto contendo os dados dos pacientes. Considereainformação estruturada em várias linhas, identificando em cada linha vária informação,nomeadamente, o número de paciente, nome, telefone. Apresenta-se a seguir umexemplo de conteúdo do ficheiro a ler:
+1. a. Carregamento de um ficheiro de texto contendo os dados dos pacientes. Considereainformação estruturada em várias linhas, identificando em cada linha vária informação,nomeadamente, o número de paciente, nome, teleficheiroUm. Apresenta-se a seguir umexemplo de conteúdo do ficheiro a ler:
 0001;Paulo;123456789
 0003;Maria;96543210
 0002;João;123321123
