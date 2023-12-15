@@ -156,7 +156,7 @@ int main() {
                 scanf("%d-%d-%d", &diaInicio, &mesInicio, &anoInicio);
                 printf("Escolha uma data final no formato dd-mm-aa: ");
                 scanf("%d-%d-%d", &diaFim, &mesFim, &anoFim);
-                ContarExcesso(Cliente, Pratos, Plano, quantidadeClientes, quantidadePratos, quantidadePlanos, diaInicio, mesInicio, anoInicio, diaFim, mesFim, anoFim);
+                printf("Numero que ultrapassam: %d\n", ContarExcesso(Cliente, Pratos, Plano, quantidadeClientes, quantidadePratos, quantidadePlanos, diaInicio, mesInicio, anoInicio, diaFim, mesFim, anoFim));
                 break;
             case 2:
                 printf("Escolha uma data inicial no formato dd-mm-aa: ");
@@ -247,9 +247,8 @@ int ContarExcesso(Atleta Cliente[TAM], Refeicao Pratos[TAM], Planos Plano[TAM], 
 
     for (int i = 0; i < quantidadePlanos; i++) {
         if (CompararDatas(Plano[i].dia, Plano[i].mes, Plano[i].ano, diaInicio, mesInicio, anoInicio, diaFim, mesFim, anoFim) == 1) {
-
             for (int j = 0; j < quantidadePratos; j++) {
-                if (CompararDatas(Pratos[j].dia, Pratos[j].mes, Pratos[j].ano, Plano[i].dia, Plano[i].mes, Plano[i].ano, diaFim, mesFim, anoFim) == 1) {                    
+                if (CompararDatas(Pratos[j].dia, Pratos[j].mes, Pratos[j].ano, Plano[i].dia, Plano[i].mes, Plano[i].ano, diaFim, mesFim, anoFim) == 1) {              
                     if ((Plano[i].codigo == Pratos[j].codigo) && (strcmp(Plano[i].refeicao, Pratos[j].refeicao) == 0)) {
                         if ((calorias + Pratos[j].cal) > Plano[i].calMax) {
                             numero++;
