@@ -2,5 +2,6 @@
 0003;14-02-2023;almoço;sopa;120 cal
 0003;15-02-2023;almoço;sopa;120 cal
 0003;16-02-2023;almoço;sopa;420 cal
+0003;16-02-2023;jantar;sopa;420 cal
 0002;28-03-2023;jantar;prato de carne;1200 cal
 0001;01-12-2023;pequeno almoço;banana;120 cal
