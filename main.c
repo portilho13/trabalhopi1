@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #define TAMSTR 32
 #define TAM 30
@@ -67,145 +68,161 @@ int ListarExcesso(Atleta Cliente[TAM], Refeicao Pratos[TAM], Planos Plano[TAM], 
 int CriarPlano(Atleta Cliente[TAM], Refeicao Pratos[TAM], int quantidadeClientes, int quantidadePratos, int codigo, int opcaoRefeicao, int diaInicio, int mesInicio, int anoInicio, int diaFim, int mesFim, int anoFim);
 float CalcularMediaRefeicoes(Refeicao Pratos[TAM], int quantidadePratos, int codigo, const char *refeicao, int diaInicio, int mesInicio, int anoInicio, int diaFim, int mesFim, int anoFim);
 int GerarTabela(Atleta Cliente[TAM], Refeicao Pratos[TAM], Planos Plano[TAM], int quantidadeClientes, int quantidadePratos, int quantidadePlanos);
+void loadingAnimation(int duration, int frames);
+void MenuAjuda();
 
-int main() {
-    Atleta Cliente[TAM];
-    Refeicao Pratos[TAM];
-    Planos Plano[TAM];
-    FILE *ficheiroUm, *ficheiroDois, *ficheiroTres;
-    char ch;
-    int i = 0, j, k, codigo, dia, mes, ano, calMin, calMax, quantidadeClientes, quantidadePratos, quantidadePlanos;
-    long tel;
-    char nome[TAMSTR];
-
-    if ((ficheiroUm = fopen("1.txt", "r")) == NULL) {
-        printf("Erro ao abrir ficheiro 1.txt\n");
-        return 0;
-    }
-
-    quantidadeClientes = 0;
-    do {
-        fscanf(ficheiroUm, "%d;%[^;];%ld\n", &codigo, nome, &tel);
-        Cliente[i].codigo = codigo;
-        strcpy(Cliente[i].nome, nome);
-        Cliente[i].tel = tel;
-        Cliente[i].calorias = 0;
-        i++;
-    } while ((!feof(ficheiroUm) && (i < TAM)));
-    quantidadeClientes = i;
-
-    fclose(ficheiroUm);
-
-    if ((ficheiroDois = fopen("2.txt", "r")) == NULL) {
-        printf("Erro ao abrir ficheiro 2.txt\n");
-        return 0;
-    }
-
-    int calorias;
-    char refeicao[TAMSTR], prato[TAMSTR];
-    i = 0;
-    quantidadePratos = 0;
-    do {
-        fscanf(ficheiroDois, "%d;%d-%d-%d;%[^;];%[^;];%d cal\n", &codigo, &dia, &mes, &ano, refeicao, prato, &calorias);
-        Pratos[i].codigo = codigo;
-        strcpy(Pratos[i].refeicao, refeicao);
-        Pratos[i].dia = dia;
-        Pratos[i].mes = mes;
-        Pratos[i].ano = ano;
-        Pratos[i].cal = calorias;
-        i++;
-    } while (!feof(ficheiroDois));
-    quantidadePratos = i;
-
-    fclose(ficheiroDois);
-
-    if ((ficheiroTres = fopen("3.txt", "r")) == NULL) {
-        printf("Erro ao abrir ficheiro 3.txt\n");
-        return 0;
-    }
-
-    i = 0;
-    quantidadePlanos = 0;
-    do {
-        codigo = dia = mes = ano = calMin = calMax = 0;
-        if (fscanf(ficheiroTres, "%d;%d-%d-%d;%[^;];%d Cal, %d Cal\n", &codigo, &dia, &mes, &ano, prato, &calMin, &calMax)!= 7) {
-            printf("Erro ao ler do ficheiro\n");
-            break;
-        }
-        if (codigo >= 0 && codigo < TAM) {
-            Plano[i].codigo = codigo;
-            Plano[i].dia = dia;
-            Plano[i].mes = mes;
-            Plano[i].ano = ano;
-            strcpy(Plano[i].refeicao, prato);
-            Plano[i].calMin = calMin;
-            Plano[i].calMax = calMax;
+int main(int argc, char *argv[]) {
+    if (argc > 1) {
+        if (strcmp(argv[1], "--ajuda") == 0) {
+            MenuAjuda();
+        } else if (strcmp(argv[1], "-a") == 0) {
+            MenuAjuda();
         } else {
-            printf("Invalid Code: %d\n", codigo);
+            printf("Erro no comando. Comandos possiveis: -a --ajuda para menu ajuda.\n");
+            return 1;
         }
-        i++;
-    } while (!feof(ficheiroTres));
-    quantidadePlanos = i;
+    } else {
+        Atleta Cliente[TAM];
+        Refeicao Pratos[TAM];
+        Planos Plano[TAM];
+        FILE *ficheiroUm, *ficheiroDois, *ficheiroTres;
+        char ch;
+        int i = 0, j, k, codigo, dia, mes, ano, calMin, calMax, quantidadeClientes, quantidadePratos, quantidadePlanos;
+        long tel;
+        char nome[TAMSTR];
+        if ((ficheiroUm = fopen("1.txt", "r")) == NULL) {
+            printf("Erro ao abrir ficheiro 1.txt\n");
+            return 1;
+        }
 
-    fclose(ficheiroTres);
+        quantidadeClientes = 0;
+        do {
+            fscanf(ficheiroUm, "%d;%[^;];%ld\n", &codigo, nome, &tel);
+            Cliente[i].codigo = codigo;
+            strcpy(Cliente[i].nome, nome);
+            Cliente[i].tel = tel;
+            Cliente[i].calorias = 0;
+            i++;
+        } while ((!feof(ficheiroUm) && (i < TAM)));
+        quantidadeClientes = i;
 
-    int opcao, opcaoRefeicao, diaInicio, mesInicio, anoInicio, diaFim, mesFim, anoFim;
-    do {
-        opcao = Menu();
-        switch (opcao) {
-            case 1:
-                printf("Escolha uma data inicial no formato dd-mm-aa: ");
-                scanf("%d-%d-%d", &diaInicio, &mesInicio, &anoInicio);
-                printf("Escolha uma data final no formato dd-mm-aa: ");
-                scanf("%d-%d-%d", &diaFim, &mesFim, &anoFim);
-                printf("Numero que ultrapassam: %d\n", ContarExcesso(Cliente, Pratos, Plano, quantidadeClientes, quantidadePratos, quantidadePlanos, diaInicio, mesInicio, anoInicio, diaFim, mesFim, anoFim));
-                break;
-            case 2:
-                printf("Escolha uma data inicial no formato dd-mm-aa: ");
-                scanf("%d-%d-%d", &diaInicio, &mesInicio, &anoInicio);
-                printf("Escolha uma data final no formato dd-mm-aa: ");
-                scanf("%d-%d-%d", &diaFim, &mesFim, &anoFim);
-                ListarExcesso(Cliente, Pratos, Plano, quantidadeClientes, quantidadePratos, quantidadePlanos, diaInicio, mesInicio, anoInicio, diaFim, mesFim, anoFim);
-                break;
-            case 3:
-                printf("Escolha o codigo de um cliente: ");
-                scanf("%d", &codigo);
-                printf("Escolha uma refeicao:\n");
-                printf("1 - pequeno almoço\n2 - almoço\n3 - jantar\n");
-                scanf("%d", &opcaoRefeicao);
-                printf("Escolha uma data inicial no formato dd-mm-aa: ");
-                scanf("%d-%d-%d", &diaInicio, &mesInicio, &anoInicio);
-                printf("Escolha uma data final no formato dd-mm-aa: ");
-                scanf("%d-%d-%d", &diaFim, &mesFim, &anoFim);
-                CriarPlano(Cliente, Pratos, quantidadeClientes, quantidadePratos, codigo, opcaoRefeicao, diaInicio, mesInicio, anoInicio, diaFim, mesFim, anoFim);
-                break;
-            case 4:
-                printf("Escolha uma data inicial no formato dd-mm-aa: ");
-                scanf("%d-%d-%d", &diaInicio, &mesInicio, &anoInicio);
-                printf("Escolha uma data final no formato dd-mm-aa: ");
-                scanf("%d-%d-%d", &diaFim, &mesFim, &anoFim);
+        fclose(ficheiroUm);
 
-                Refeicao CopiaPratos[TAM];
-                for (int i = 0; i < quantidadePratos; i++) {
-                    CopiaPratos[i] = Pratos[i];
-                }
-                printf("----------------------------------------------------------------\n");
-                for (int i = 0; i < quantidadePratos; i++) {
-                    float media = CalcularMediaRefeicoes(CopiaPratos, quantidadePratos, CopiaPratos[i].codigo, CopiaPratos[i].refeicao, diaInicio, mesInicio, anoInicio, diaFim, mesFim, anoFim);
-                    if (media > 0 ) {
-                        printf("| Codigo: %d | Refeicao %s | Media de calorias: %.2f |\n", Pratos[i].codigo, Pratos[i].refeicao, media);
-                        printf("----------------------------------------------------------------\n");
+        if ((ficheiroDois = fopen("2.txt", "r")) == NULL) {
+            printf("Erro ao abrir ficheiro 2.txt\n");
+            return 1;
+        }
+
+        int calorias;
+        char refeicao[TAMSTR], prato[TAMSTR];
+        i = 0;
+        quantidadePratos = 0;
+        do {
+            fscanf(ficheiroDois, "%d;%d-%d-%d;%[^;];%[^;];%d cal\n", &codigo, &dia, &mes, &ano, refeicao, prato, &calorias);
+            Pratos[i].codigo = codigo;
+            strcpy(Pratos[i].refeicao, refeicao);
+            Pratos[i].dia = dia;
+            Pratos[i].mes = mes;
+            Pratos[i].ano = ano;
+            Pratos[i].cal = calorias;
+            i++;
+        } while (!feof(ficheiroDois));
+        quantidadePratos = i;
+
+        fclose(ficheiroDois);
+
+        if ((ficheiroTres = fopen("3.txt", "r")) == NULL) {
+            printf("Erro ao abrir ficheiro 3.txt\n");
+            return 0;
+        }
+
+        i = 0;
+        quantidadePlanos = 0;
+        do {
+            codigo = dia = mes = ano = calMin = calMax = 0;
+            if (fscanf(ficheiroTres, "%d;%d-%d-%d;%[^;];%d Cal, %d Cal\n", &codigo, &dia, &mes, &ano, prato, &calMin, &calMax)!= 7) {
+                printf("Erro ao ler do ficheiro\n");
+                return 1;
+            }
+            if (codigo >= 0 && codigo < TAM) {
+                Plano[i].codigo = codigo;
+                Plano[i].dia = dia;
+                Plano[i].mes = mes;
+                Plano[i].ano = ano;
+                strcpy(Plano[i].refeicao, prato);
+                Plano[i].calMin = calMin;
+                Plano[i].calMax = calMax;
+            } else {
+                printf("Invalid Code: %d\n", codigo);
+            }
+            i++;
+        } while (!feof(ficheiroTres));
+        quantidadePlanos = i;
+
+        fclose(ficheiroTres);
+        //loadingAnimation(100, 20);
+        int opcao, opcaoRefeicao, diaInicio, mesInicio, anoInicio, diaFim, mesFim, anoFim;
+        do {
+            opcao = Menu();
+            switch (opcao) {
+                case 1:
+                    printf("Escolha uma data inicial no formato dd-mm-aa: ");
+                    scanf("%d-%d-%d", &diaInicio, &mesInicio, &anoInicio);
+                    printf("Escolha uma data final no formato dd-mm-aa: ");
+                    scanf("%d-%d-%d", &diaFim, &mesFim, &anoFim);
+                    printf("Numero que ultrapassam: %d\n", ContarExcesso(Cliente, Pratos, Plano, quantidadeClientes, quantidadePratos, quantidadePlanos, diaInicio, mesInicio, anoInicio, diaFim, mesFim, anoFim));
+                    break;
+                case 2:
+                    printf("Escolha uma data inicial no formato dd-mm-aa: ");
+                    scanf("%d-%d-%d", &diaInicio, &mesInicio, &anoInicio);
+                    printf("Escolha uma data final no formato dd-mm-aa: ");
+                    scanf("%d-%d-%d", &diaFim, &mesFim, &anoFim);
+                    ListarExcesso(Cliente, Pratos, Plano, quantidadeClientes, quantidadePratos, quantidadePlanos, diaInicio, mesInicio, anoInicio, diaFim, mesFim, anoFim);
+                    break;
+                case 3:
+                    printf("Escolha o codigo de um cliente: ");
+                    scanf("%d", &codigo);
+                    printf("Escolha uma refeicao:\n");
+                    printf("1 - pequeno almoço\n2 - almoço\n3 - jantar\n");
+                    scanf("%d", &opcaoRefeicao);
+                    printf("Escolha uma data inicial no formato dd-mm-aa: ");
+                    scanf("%d-%d-%d", &diaInicio, &mesInicio, &anoInicio);
+                    printf("Escolha uma data final no formato dd-mm-aa: ");
+                    scanf("%d-%d-%d", &diaFim, &mesFim, &anoFim);
+                    CriarPlano(Cliente, Pratos, quantidadeClientes, quantidadePratos, codigo, opcaoRefeicao, diaInicio, mesInicio, anoInicio, diaFim, mesFim, anoFim);
+                    break;
+                case 4:
+                    printf("Escolha uma data inicial no formato dd-mm-aa: ");
+                    scanf("%d-%d-%d", &diaInicio, &mesInicio, &anoInicio);
+                    printf("Escolha uma data final no formato dd-mm-aa: ");
+                    scanf("%d-%d-%d", &diaFim, &mesFim, &anoFim);
+
+                    Refeicao CopiaPratos[TAM];
+                    for (int i = 0; i < quantidadePratos; i++) {
+                        CopiaPratos[i] = Pratos[i];
                     }
+                    printf("----------------------------------------------------------------\n");
+                    for (int i = 0; i < quantidadePratos; i++) {
+                        float media = CalcularMediaRefeicoes(CopiaPratos, quantidadePratos, CopiaPratos[i].codigo, CopiaPratos[i].refeicao, diaInicio, mesInicio, anoInicio, diaFim, mesFim, anoFim);
+                        if (media > 0 ) {
+                            printf("| Codigo: %d | Refeicao %s | Media de calorias: %.2f |\n", Pratos[i].codigo, Pratos[i].refeicao, media);
+                            printf("----------------------------------------------------------------\n");
+                        }
 
-                }
-                break;
-            case 5:
-                GerarTabela(Cliente, Pratos, Plano, quantidadeClientes, quantidadePratos, quantidadePlanos);
-                break;
-            default:
-                printf("Opcao invalida.\n");
-        }
-    } while (opcao != 0);
+                    }
+                    break;
+                case 5:
+                    GerarTabela(Cliente, Pratos, Plano, quantidadeClientes, quantidadePratos, quantidadePlanos);
+                    break;
+                case 0:
+                    printf("A sair....\n");
+                    break;
+                default:
+                    printf("Opcao invalida.\n");
+            }
+        } while (opcao != 0);
+    }
+
     return 0;
 }
 
@@ -459,4 +476,20 @@ int GerarTabela(Atleta Cliente[TAM], Refeicao Pratos[TAM], Planos Plano[TAM], in
         printf("---------------------------------------------------------------------------\n");
     }
     return 0;
+}
+
+void loadingAnimation(int duration, int frames) {
+    const char spinChars[] = {'|', '/', '-', '\\'};
+
+    for (int i = 0; i < frames; ++i) {
+        printf("\rA carregar ficheiros %c", spinChars[i % 4]);
+        fflush(stdout);
+        usleep(duration * 1000);  // Sleep for 'duration' milliseconds
+    }
+
+    printf("\rCarregamento completo!   \n");
+}
+
+void MenuAjuda() {
+    printf("Menu ajuda\n");
 }
