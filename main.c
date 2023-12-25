@@ -170,14 +170,23 @@ int main(int argc, char *argv[]) {
                     scanf("%d-%d-%d", &diaInicio, &mesInicio, &anoInicio);
                     printf("Escolha uma data final no formato dd-mm-aa: ");
                     scanf("%d-%d-%d", &diaFim, &mesFim, &anoFim);
-                    printf("Numero que ultrapassam: %d\n", ContarExcesso(Cliente, Pratos, Plano, quantidadeClientes, quantidadePratos, quantidadePlanos, diaInicio, mesInicio, anoInicio, diaFim, mesFim, anoFim));
+                    if (CompararData(diaFim, mesFim, anoFim, diaInicio, mesInicio, anoInicio) >= 0) {
+                        printf("Numero que ultrapassam: %d\n", ContarExcesso(Cliente, Pratos, Plano, quantidadeClientes, quantidadePratos, quantidadePlanos, diaInicio, mesInicio, anoInicio, diaFim, mesFim, anoFim));
+                    } else {
+                        printf("A sua data nao e valida.\n");
+                    }
+
                     break;
                 case 2:
                     printf("Escolha uma data inicial no formato dd-mm-aa: ");
                     scanf("%d-%d-%d", &diaInicio, &mesInicio, &anoInicio);
                     printf("Escolha uma data final no formato dd-mm-aa: ");
                     scanf("%d-%d-%d", &diaFim, &mesFim, &anoFim);
-                    ListarExcesso(Cliente, Pratos, Plano, quantidadeClientes, quantidadePratos, quantidadePlanos, diaInicio, mesInicio, anoInicio, diaFim, mesFim, anoFim);
+                    if (CompararData(diaFim, mesFim, anoFim, diaInicio, mesInicio, anoInicio) >= 0) {
+                        ListarExcesso(Cliente, Pratos, Plano, quantidadeClientes, quantidadePratos, quantidadePlanos, diaInicio, mesInicio, anoInicio, diaFim, mesFim, anoFim);
+                    } else {
+                        printf("A sua data nao e valida.\n");
+                    }                    
                     break;
                 case 3:
                     printf("Escolha o codigo de um cliente: ");
@@ -189,26 +198,33 @@ int main(int argc, char *argv[]) {
                     scanf("%d-%d-%d", &diaInicio, &mesInicio, &anoInicio);
                     printf("Escolha uma data final no formato dd-mm-aa: ");
                     scanf("%d-%d-%d", &diaFim, &mesFim, &anoFim);
-                    CriarPlano(Cliente, Pratos, quantidadeClientes, quantidadePratos, codigo, opcaoRefeicao, diaInicio, mesInicio, anoInicio, diaFim, mesFim, anoFim);
+                    if (CompararData(diaFim, mesFim, anoFim, diaInicio, mesInicio, anoInicio) >= 0) {
+                        CriarPlano(Cliente, Pratos, quantidadeClientes, quantidadePratos, codigo, opcaoRefeicao, diaInicio, mesInicio, anoInicio, diaFim, mesFim, anoFim);
+                    } else {
+                        printf("A sua data nao e valida.\n");
+                    }
                     break;
                 case 4:
                     printf("Escolha uma data inicial no formato dd-mm-aa: ");
                     scanf("%d-%d-%d", &diaInicio, &mesInicio, &anoInicio);
                     printf("Escolha uma data final no formato dd-mm-aa: ");
                     scanf("%d-%d-%d", &diaFim, &mesFim, &anoFim);
-
-                    Refeicao CopiaPratos[TAM];
-                    for (int i = 0; i < quantidadePratos; i++) {
-                        CopiaPratos[i] = Pratos[i];
-                    }
-                    printf("----------------------------------------------------------------\n");
-                    for (int i = 0; i < quantidadePratos; i++) {
-                        float media = CalcularMediaRefeicoes(CopiaPratos, quantidadePratos, CopiaPratos[i].codigo, CopiaPratos[i].refeicao, diaInicio, mesInicio, anoInicio, diaFim, mesFim, anoFim);
-                        if (media > 0 ) {
-                            printf("| Codigo: %d | Refeicao %s | Media de calorias: %.2f |\n", Pratos[i].codigo, Pratos[i].refeicao, media);
-                            printf("----------------------------------------------------------------\n");
+                    if (CompararData(diaFim, mesFim, anoFim, diaInicio, mesInicio, anoInicio) >= 0) {
+                        Refeicao CopiaPratos[TAM];
+                        for (int i = 0; i < quantidadePratos; i++) {
+                            CopiaPratos[i] = Pratos[i];
                         }
+                        printf("----------------------------------------------------------------\n");
+                        for (int i = 0; i < quantidadePratos; i++) {
+                            float media = CalcularMediaRefeicoes(CopiaPratos, quantidadePratos, CopiaPratos[i].codigo, CopiaPratos[i].refeicao, diaInicio, mesInicio, anoInicio, diaFim, mesFim, anoFim);
+                            if (media > 0 ) {
+                                printf("| Codigo: %d | Refeicao %s | Media de calorias: %.2f |\n", Pratos[i].codigo, Pratos[i].refeicao, media);
+                                printf("----------------------------------------------------------------\n");
+                            }
 
+                        }
+                    } else {
+                        printf("A sua data nao e valida.\n");
                     }
                     break;
                 case 5:
@@ -417,7 +433,7 @@ int GerarTabela(Atleta Cliente[TAM], Refeicao Pratos[TAM], Planos Plano[TAM], in
         for (int j = 0; j < quantidadeTabela; j++) {
             int numCal = 0;
             if ((strcmp(Tabela[j].refeicao, Plano[i].refeicao) == 0) && (Tabela[j].codigo == Plano[i].codigo)) {
-                if (CompararData(Tabela[j].diainicio, Tabela[j].mesinicio, Tabela[j].anoinicio, Plano[i].dia, Plano[i].mes, Plano[i].ano) == 1) {
+                if (CompararData(Tabela[j].diainicio, Tabela[j].mesinicio, Tabela[j].anoinicio, Plano[i].dia, Plano[i].mes, Plano[i].ano)  == 1) {
                     Tabela[j].diainicio = Plano[i].dia;
                     Tabela[j].mesinicio = Plano[i].mes;
                     Tabela[j].anoinicio = Plano[i].ano;
