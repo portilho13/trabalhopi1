@@ -62,7 +62,6 @@ int ListarExcesso(Atleta Cliente[TAM], Refeicao Pratos[TAM], Planos Plano[TAM], 
 int CriarPlano(Atleta Cliente[TAM], Refeicao Pratos[TAM], int quantidadeClientes, int quantidadePratos, int codigo, int opcaoRefeicao, int diaInicio, int mesInicio, int anoInicio, int diaFim, int mesFim, int anoFim);
 float CalcularMediaRefeicoes(Refeicao Pratos[TAM], int quantidadePratos, int codigo, const char *refeicao, int diaInicio, int mesInicio, int anoInicio, int diaFim, int mesFim, int anoFim);
 int GerarTabela(Atleta Cliente[TAM], Refeicao Pratos[TAM], Planos Plano[TAM], int quantidadeClientes, int quantidadePratos, int quantidadePlanos);
-void loadingAnimation(int duration, int frames);
 void MenuAjuda();
 int GravarCliente(Atleta Cliente[TAM], int quantidadeClientes);
 int RegistarRefeicao(Atleta Cliente[TAM], Refeicao Pratos[TAM], int quantidadePratos, int quantidadeClientes);
@@ -158,7 +157,6 @@ int main(int argc, char *argv[]) {
         quantidadePlanos = i;
 
         fclose(ficheiroTres);
-        //loadingAnimation(100, 20);
         int opcao, opcaoRefeicao, diaInicio, mesInicio, anoInicio, diaFim, mesFim, anoFim;
         do {
             opcao = Menu();
@@ -503,18 +501,6 @@ int GerarTabela(Atleta Cliente[TAM], Refeicao Pratos[TAM], Planos Plano[TAM], in
         printf("---------------------------------------------------------------------------\n");
     }
     return 0;
-}
-
-void loadingAnimation(int duration, int frames) {
-    const char spinChars[] = {'|', '/', '-', '\\'};
-
-    for (int i = 0; i < frames; ++i) {
-        printf("\rA carregar ficheiros %c", spinChars[i % 4]);
-        fflush(stdout);
-        usleep(duration * 1000);  // Sleep for 'duration' milliseconds
-    }
-
-    printf("\rCarregamento completo!   \n");
 }
 
 void MenuAjuda() {
