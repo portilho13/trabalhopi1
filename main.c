@@ -1,9 +1,3 @@
-// TODO:
-
-// Input para periodos de tempo;
-// Criar Tabelas
-// Adicionar caso para quando datas sao iguais
-
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -70,6 +64,10 @@ float CalcularMediaRefeicoes(Refeicao Pratos[TAM], int quantidadePratos, int cod
 int GerarTabela(Atleta Cliente[TAM], Refeicao Pratos[TAM], Planos Plano[TAM], int quantidadeClientes, int quantidadePratos, int quantidadePlanos);
 void loadingAnimation(int duration, int frames);
 void MenuAjuda();
+int GravarCliente(Atleta Cliente[TAM], int quantidadeClientes);
+int RegistarRefeicao(Atleta Cliente[TAM], Refeicao Pratos[TAM], int quantidadePratos, int quantidadeClientes);
+int ValidarCliente(Atleta Cliente[TAM], int quantidadeClientes, int codigo);
+int RegistarPlano(Atleta Cliente[TAM], Planos Plano[TAM], int quantidadeClientes, int quantidadePlanos);
 
 int main(int argc, char *argv[]) {
     if (argc > 1) {
@@ -230,6 +228,16 @@ int main(int argc, char *argv[]) {
                 case 5:
                     GerarTabela(Cliente, Pratos, Plano, quantidadeClientes, quantidadePratos, quantidadePlanos);
                     break;
+                case 6:
+                    quantidadeClientes = GravarCliente(Cliente, quantidadeClientes);
+                    printf("Quantidade: %i\n", quantidadeClientes);
+                    break;
+                case 7:
+                    quantidadePratos = RegistarRefeicao(Cliente, Pratos, quantidadePratos, quantidadeClientes);
+                    break;
+                case 8:
+                    quantidadePratos = RegistarPlano(Cliente, Plano, quantidadeClientes, quantidadePlanos);
+                    break;
                 case 0:
                     printf("A sair....\n");
                     break;
@@ -249,10 +257,13 @@ int main(int argc, char *argv[]) {
     printf("|                                                    Menu                                                             |\n");
     printf("------------------------------------------------------------------------------------------------------------------------\n");
     printf("|        1 - Numero de pacientes que ultrapassaram determinada quantidade de calorias, num determinado periodo         |\n");
-    printf("|        2 - Listagem dos pacientes, ordenada por ordem decrescente do numero de paciente,                 ||        que realizaram alguma refeicao com quantidade de calorias fora do intervalo                    |\n");
+    printf("|        2 - Listagem dos pacientes, ordenada por ordem decrescente do numero de paciente                 ||        que realizaram alguma refeicao com quantidade de calorias fora do intervalo                    |\n");
     printf("|        3 - Listar o plano nutricional de um paciente para determinada refeicao ao longo de um determinado periodo    |\n");
     printf("|        4 - Calculo das medias das calorias consumidas por refeicao por cada paciente ao longo                        |\n|            de um determinado periodo                                                                                 |\n");
     printf("|        5 - Gerar a tabela das refeicoes                                                                              |\n");
+    printf("|        6 - Registar novo cliente                                                                              |\n");
+    printf("|        7 - Registar nova refeicao a tabela das refeicoes                                                                              |\n");
+    printf("|        8 - Registar novo plano nutricional                                                                              |\n");
     printf("|        0 - Sair                                                                                                      |\n");
     printf("------------------------------------------------------------------------------------------------------------------------\n");
     printf("Selecione uma opcao: ");
@@ -508,4 +519,157 @@ void loadingAnimation(int duration, int frames) {
 
 void MenuAjuda() {
     printf("Menu ajuda\n");
+}
+
+int GravarCliente(Atleta Cliente[TAM], int quantidadeClientes) {
+    char nome[TAMSTR];
+    long telefone;
+    int codigo = 0;
+
+    for (int i = 0; i < quantidadeClientes; i++) {
+        if (Cliente[i].codigo > codigo) {
+            codigo = Cliente[i].codigo;
+        }
+        printf("%i\n", i);
+    }
+    codigo++;
+    printf("Codigo: %i\n", codigo);
+
+    printf("Nome do cliente: ");
+    scanf("%s", nome);
+    printf("Escolha um numero de telefone: ");
+    scanf("%li", &telefone);
+
+    Cliente[quantidadeClientes].codigo = codigo;
+    strcpy(Cliente[quantidadeClientes].nome, nome);
+    Cliente[quantidadeClientes].tel = telefone;
+    quantidadeClientes++;
+
+    FILE *ficheiro = fopen("1.txt", "a");
+    if (ficheiro == NULL) {
+        printf("Erro ao abrir ficheiro.\n");
+        return 1;
+    }
+    fprintf(ficheiro, "\n%i;%s;%li", codigo, nome, telefone);
+    fclose(ficheiro);
+
+    return quantidadeClientes;
+}
+
+int RegistarRefeicao(Atleta Cliente[TAM], Refeicao Pratos[TAM], int quantidadePratos, int quantidadeClientes) {
+    int codigo, calorias, dia, mes, ano, opcaoRefeicao;
+    char refeicao[TAMSTR];
+    char prato[TAMSTR];
+    printf("Digite o codigo do cliente: ");
+    scanf("%i", &codigo);
+    if (ValidarCliente(Cliente, quantidadeClientes, codigo) == 1) {
+        printf("Id de cliente invalido.\n");
+        return 0;
+    }
+    printf("Digite a data no formato dd-mm-aa: ");
+    scanf("%d-%d-%d", &dia, &mes, &ano);
+
+    getchar();
+    printf("Escolha a opcao de refeicao:\n1 - pequeno almoço\n2 - almoço\n3 - jantar\n");
+    scanf("%i", &opcaoRefeicao);
+    switch (opcaoRefeicao)
+    {
+    case 1:
+        strcpy(refeicao, "pequeno almoço");
+        break;
+    case 2:
+        strcpy(refeicao, "almoço");
+        break;
+    case 3:
+        strcpy(refeicao, "jantar");
+        break;
+    default:
+        break;
+    }
+    printf("Digite o nome do prato: ");
+    scanf("%s", prato);
+    printf("Digite o numero de calorias: ");
+    scanf("%i", &calorias);
+
+    Pratos[quantidadePratos].codigo = codigo;
+    Pratos[quantidadePratos].dia = dia;
+    Pratos[quantidadePratos].mes = mes;
+    Pratos[quantidadePratos].ano = ano;
+    strcpy(Pratos[quantidadePratos].refeicao, refeicao);
+    Pratos[quantidadePratos].cal = calorias;
+    quantidadePratos++;
+    
+    FILE *ficheiro = fopen("2.txt", "a");
+
+    if (ficheiro == NULL) {
+        printf("Erro ao abrir ficheiro.\n");
+        return 0;
+    }
+    fprintf(ficheiro, "\n%i;%i-%i-%i;%s;%s;%i cal", codigo, dia, mes, ano, refeicao, prato, calorias);
+    fclose(ficheiro);
+    return quantidadePratos;
+}
+
+int ValidarCliente(Atleta Cliente[TAM], int quantidadeClientes, int codigo) {
+    for (int i = 0; i < quantidadeClientes; i++) {
+        if (Cliente[i].codigo == codigo) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+int RegistarPlano(Atleta Cliente[TAM], Planos Plano[TAM], int quantidadeClientes, int quantidadePlanos) {
+    int codigo, caloriasMin, caloriasMax, dia, mes, ano, opcaoRefeicao;
+    char refeicao[TAMSTR];
+    char prato[TAMSTR];
+    printf("Digite o codigo do cliente: ");
+    scanf("%i", &codigo);
+    if (ValidarCliente(Cliente, quantidadeClientes, codigo) == 1) {
+        printf("Id de cliente invalido.\n");
+        return 0;
+    }
+    printf("Digite a data no formato dd-mm-aa: ");
+    scanf("%d-%d-%d", &dia, &mes, &ano);
+
+    getchar();
+    printf("Escolha a opcao de refeicao:\n1 - pequeno almoço\n2 - almoço\n3 - jantar\n");
+    scanf("%i", &opcaoRefeicao);
+    switch (opcaoRefeicao)
+    {
+    case 1:
+        strcpy(refeicao, "pequeno almoço");
+        break;
+    case 2:
+        strcpy(refeicao, "almoço");
+        break;
+    case 3:
+        strcpy(refeicao, "jantar");
+        break;
+    default:
+        break;
+    }
+    printf("Digite o numero de calorias minimo: ");
+    scanf("%i", &caloriasMin);
+    printf("Digite o numero de calorias maximo: ");
+    scanf("%i", &caloriasMax);
+
+    Plano[quantidadePlanos].codigo = codigo;
+    Plano[quantidadePlanos].dia = dia;
+    Plano[quantidadePlanos].mes = mes;
+    Plano[quantidadePlanos].ano = ano;
+    strcpy(Plano[quantidadePlanos].refeicao, refeicao);
+    Plano[quantidadePlanos].calMin = caloriasMin;
+    Plano[quantidadePlanos].calMax = caloriasMax;
+    quantidadePlanos++;
+    
+    FILE *ficheiro = fopen("3.txt", "a");
+
+    if (ficheiro == NULL) {
+        printf("Erro ao abrir ficheiro.\n");
+        return 0;
+    }
+    fprintf(ficheiro, "\n%i;%i-%i-%i;%s;%i Cal, %i Cal", codigo, dia, mes, ano, refeicao, caloriasMin, caloriasMax);
+    fclose(ficheiro);
+    return quantidadePlanos;
 }

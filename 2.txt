@@ -5,3 +5,5 @@
 0003;16-02-2023;jantar;sopa;420 cal
 0002;28-03-2023;jantar;prato de carne;1200 cal
 0001;01-12-2023;pequeno almoço;banana;120 cal
+1;31-12-2023;pequeno almoço;ola;120 cal
+3;31-12-2024;pequeno almoço;ola;12000 cal
