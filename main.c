@@ -60,7 +60,7 @@ int ContarExcesso(Atleta Cliente[TAM], Refeicao Pratos[TAM], Planos Plano[TAM], 
 int OrdenarClientes(Atleta Cliente[TAM], int quantidadeClientes);
 int ObterExcesso(Atleta Cliente[TAM], Refeicao Pratos[TAM], Planos Plano[TAM], int quantidadeClientes, int quantidadePratos, int quantidadePlanos, int diaInicio, int mesInicio, int anoInicio, int diaFim, int mesFim, int anoFim, int codigo);
 int ListarExcesso(Atleta Cliente[TAM], Refeicao Pratos[TAM], Planos Plano[TAM], int quantidadeClientes, int quantidadePratos, int quantidadePlanos, int diaInicio, int mesInicio, int anoInicio, int diaFim, int mesFim, int anoFim);
-int CriarPlano(Atleta Cliente[TAM], Refeicao Pratos[TAM], int quantidadeClientes, int quantidadePratos, int codigo, int opcaoRefeicao, int diaInicio, int mesInicio, int anoInicio, int diaFim, int mesFim, int anoFim);
+int CriarPlano(Atleta Cliente[TAM], Planos Plano[TAM], int quantidadeClientes, int quantidadePlanos, int codigo, int opcaoRefeicao, int diaInicio, int mesInicio, int anoInicio, int diaFim, int mesFim, int anoFim);
 float CalcularMediaRefeicoes(Refeicao Pratos[TAM], int quantidadePratos, int codigo, const char *refeicao, int diaInicio, int mesInicio, int anoInicio, int diaFim, int mesFim, int anoFim);
 int GerarTabela(Atleta Cliente[TAM], Refeicao Pratos[TAM], Planos Plano[TAM], int quantidadeClientes, int quantidadePratos, int quantidadePlanos);
 void MenuAjuda();
@@ -233,7 +233,7 @@ int main(int argc, char *argv[]) {
                 printf("Escolha uma data final no formato dd-mm-aa: ");
                 scanf("%d-%d-%d", &diaFim, &mesFim, &anoFim);
                 if (CompararData(diaFim, mesFim, anoFim, diaInicio, mesInicio, anoInicio) >= 0) {
-                    CriarPlano(Cliente, Pratos, quantidadeClientes, quantidadePratos, codigo, opcaoRefeicao, diaInicio, mesInicio, anoInicio, diaFim, mesFim, anoFim);
+                    CriarPlano(Cliente, Plano, quantidadeClientes, quantidadePlanos, codigo, opcaoRefeicao, diaInicio, mesInicio, anoInicio, diaFim, mesFim, anoFim);
                 } else {
                     printf("A sua data nao e valida.\n");
                 }
@@ -439,7 +439,7 @@ int ListarExcesso(Atleta Cliente[TAM], Refeicao Pratos[TAM], Planos Plano[TAM], 
 
 
 
-int CriarPlano(Atleta Cliente[TAM], Refeicao Pratos[TAM], int quantidadeClientes, int quantidadePratos, int codigo, int opcaoRefeicao, int diaInicio, int mesInicio, int anoInicio, int diaFim, int mesFim, int anoFim) {
+int CriarPlano(Atleta Cliente[TAM], Planos Plano[TAM], int quantidadeClientes, int quantidadePlanos, int codigo, int opcaoRefeicao, int diaInicio, int mesInicio, int anoInicio, int diaFim, int mesFim, int anoFim) {
     char refeicao[TAMSTR];
     switch (opcaoRefeicao)
     {
@@ -455,13 +455,13 @@ int CriarPlano(Atleta Cliente[TAM], Refeicao Pratos[TAM], int quantidadeClientes
     default:
         break;
     }
-    printf("------------------------------------------\n");
-    for (int i = 0; i < quantidadePratos; i++) {
-        if ((CompararDatas(Pratos[i].dia, Pratos[i].mes, Pratos[i].ano, diaInicio, mesInicio, anoInicio, diaFim, mesFim, anoFim) == 1) && (strcmp(Pratos[i].refeicao, refeicao) == 0)) {
+    printf("------------------------------------------------------------------------------------\n");
+    for (int i = 0; i < quantidadePlanos; i++) {
+        if ((CompararDatas(Plano[i].dia, Plano[i].mes, Plano[i].ano, diaInicio, mesInicio, anoInicio, diaFim, mesFim, anoFim) == 1) && (strcmp(Plano[i].refeicao, refeicao) == 0)) {
             for (int j = 0; j < quantidadeClientes; j++) {
-                if((Cliente[j].codigo == codigo) && (Pratos[i].codigo == codigo)) {
-                    printf("| Codigo: %d | Refeicao %s | Data: %d-%d-%d |\n", codigo, refeicao, Pratos[i].dia, Pratos[i].mes, Pratos[i].ano);
-                    printf("------------------------------------------\n");
+                if((Cliente[j].codigo == codigo) && (Plano[i].codigo == codigo)) {
+                    printf("| Codigo: %d | Refeicao %s | Data: %d-%d-%d | Calorias Minimas: %i | Calorias Maxmimas: %i |\n", codigo, refeicao, Plano[i].dia, Plano[i].mes, Plano[i].ano, Plano[i].calMin, Plano[i].calMax);
+                    printf("------------------------------------------------------------------------------------\n");
                 }
             }
         }
