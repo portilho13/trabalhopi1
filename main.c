@@ -460,7 +460,7 @@ int CriarPlano(Atleta Cliente[TAM], Planos Plano[TAM], int quantidadeClientes, i
         if ((CompararDatas(Plano[i].dia, Plano[i].mes, Plano[i].ano, diaInicio, mesInicio, anoInicio, diaFim, mesFim, anoFim) == 1) && (strcmp(Plano[i].refeicao, refeicao) == 0)) {
             for (int j = 0; j < quantidadeClientes; j++) {
                 if((Cliente[j].codigo == codigo) && (Plano[i].codigo == codigo)) {
-                    printf("| Codigo: %d | Refeicao %s | Data: %d-%d-%d | Calorias Minimas: %i | Calorias Maxmimas: %i |\n", codigo, refeicao, Plano[i].dia, Plano[i].mes, Plano[i].ano, Plano[i].calMin, Plano[i].calMax);
+                    printf("| Codigo: %d | Refeicao %s | Data: %d-%d-%d | Calorias Minimas: %i | Calorias Maximas: %i |\n", codigo, refeicao, Plano[i].dia, Plano[i].mes, Plano[i].ano, Plano[i].calMin, Plano[i].calMax);
                     printf("------------------------------------------------------------------------------------\n");
                 }
             }
