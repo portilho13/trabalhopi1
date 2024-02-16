@@ -574,7 +574,6 @@ int GravarCliente(Atleta Cliente[TAM], int quantidadeClientes, char nomeFicheiro
         if (Cliente[i].codigo > codigo) {
             codigo = Cliente[i].codigo;
         }
-        printf("%i\n", i);
     }
     codigo++;
     printf("Nome do cliente: ");
@@ -592,7 +591,7 @@ int GravarCliente(Atleta Cliente[TAM], int quantidadeClientes, char nomeFicheiro
         printf("Erro ao abrir ficheiro.\n");
         return 1;
     }
-    fprintf(ficheiro, "\n%i;%s;%li", codigo, nome, telefone);
+    fprintf(ficheiro, "%i;%s;%li\n", codigo, nome, telefone);
     fclose(ficheiro);
 
     return quantidadeClientes;
@@ -647,7 +646,7 @@ int RegistarRefeicao(Atleta Cliente[TAM], Refeicao Pratos[TAM], int quantidadePr
         printf("Erro ao abrir ficheiro.\n");
         return 0;
     }
-    fprintf(ficheiro, "\n%i;%i-%i-%i;%s;%s;%i cal", codigo, dia, mes, ano, refeicao, prato, calorias);
+    fprintf(ficheiro, "%i;%i-%i-%i;%s;%s;%i cal\n", codigo, dia, mes, ano, refeicao, prato, calorias);
     fclose(ficheiro);
     return quantidadePratos;
 }
@@ -711,7 +710,7 @@ int RegistarPlano(Atleta Cliente[TAM], Planos Plano[TAM], int quantidadeClientes
         printf("Erro ao abrir ficheiro.\n");
         return 0;
     }
-    fprintf(ficheiro, "\n%i;%i-%i-%i;%s;%i Cal, %i Cal", codigo, dia, mes, ano, refeicao, caloriasMin, caloriasMax);
+    fprintf(ficheiro, "%i;%i-%i-%i;%s;%i Cal, %i Cal\n", codigo, dia, mes, ano, refeicao, caloriasMin, caloriasMax);
     fclose(ficheiro);
     return quantidadePlanos;
 }
